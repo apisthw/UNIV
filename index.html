@@ -158,6 +158,9 @@
       <button class="tab-btn flex items-center gap-2 px-4 py-3 border-b-2 border-transparent text-ink3 hover:text-ink transition-colors whitespace-nowrap" data-tab="lessons" role="tab" aria-selected="false">
         <span class="tab-dot w-1.5 h-1.5 rounded-full bg-line"></span>บทเรียน
       </button>
+      <button class="tab-btn flex items-center gap-2 px-4 py-3 border-b-2 border-transparent text-ink3 hover:text-ink transition-colors whitespace-nowrap" data-tab="scores" role="tab" aria-selected="false">
+        <span class="tab-dot w-1.5 h-1.5 rounded-full bg-line"></span>คะแนนวิศวะ
+      </button>
       <button class="tab-btn flex items-center gap-2 px-4 py-3 border-b-2 border-transparent text-ink3 hover:text-ink transition-colors whitespace-nowrap" data-tab="progress" role="tab" aria-selected="false">
         <span class="tab-dot w-1.5 h-1.5 rounded-full bg-line"></span>ความคืบหน้า
       </button>
@@ -175,6 +178,9 @@
 
   <!-- ================= DASHBOARD ================= -->
   <section id="tab-dashboard" class="space-y-6">
+    <!-- Continue-where-you-left-off -->
+    <div id="continueCard" class="tick relative bg-surface border border-accent/40 rounded p-4"></div>
+
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
       <div class="tick relative bg-surface border border-line rounded p-4">
         <p class="text-[11px] uppercase tracking-widest text-ink3 font-mono">ข้อสอบที่ทำ</p>
@@ -183,36 +189,51 @@
       </div>
       <div class="tick relative bg-surface border border-line rounded p-4">
         <p class="text-[11px] uppercase tracking-widest text-ink3 font-mono">ความแม่นยำเฉลี่ย</p>
-        <p id="statAccuracy" class="text-3xl font-bold font-mono font-tabular mt-1">—</p>
+        <div class="flex items-center gap-3 mt-1">
+          <svg id="ringAccuracy" width="44" height="44" viewBox="0 0 44 44" class="shrink-0 -rotate-90">
+            <circle cx="22" cy="22" r="18" fill="none" stroke="var(--border)" stroke-width="4"/>
+            <circle id="ringAccuracyFill" cx="22" cy="22" r="18" fill="none" stroke="var(--accent2)" stroke-width="4" stroke-linecap="round" stroke-dasharray="113.1" stroke-dashoffset="113.1" style="transition: stroke-dashoffset .6s ease"/>
+          </svg>
+          <p id="statAccuracy" class="text-2xl font-bold font-mono font-tabular">—</p>
+        </div>
         <p class="text-xs text-ink3 mt-1">จากทุกชุดที่ทำ</p>
       </div>
       <div class="relative bg-surface border border-line rounded p-4">
         <p class="text-[11px] uppercase tracking-widest text-ink3 font-mono">บทเรียนที่จบ</p>
-        <p id="statLessons" class="text-3xl font-bold font-mono font-tabular mt-1">0<span class="text-base text-ink3">/32</span></p>
+        <div class="flex items-center gap-3 mt-1">
+          <svg id="ringLessons" width="44" height="44" viewBox="0 0 44 44" class="shrink-0 -rotate-90">
+            <circle cx="22" cy="22" r="18" fill="none" stroke="var(--border)" stroke-width="4"/>
+            <circle id="ringLessonsFill" cx="22" cy="22" r="18" fill="none" stroke="var(--good)" stroke-width="4" stroke-linecap="round" stroke-dasharray="113.1" stroke-dashoffset="113.1" style="transition: stroke-dashoffset .6s ease"/>
+          </svg>
+          <p id="statLessons" class="text-2xl font-bold font-mono font-tabular">0<span class="text-sm text-ink3">/32</span></p>
+        </div>
         <p class="text-xs text-ink3 mt-1">หัวข้อทั้งหมด</p>
       </div>
-      <div class="relative bg-surface border border-line rounded p-4">
+      <button type="button" data-goto="scores" class="relative bg-surface border border-line rounded p-4 text-left hover:border-accent transition-colors group">
         <p class="text-[11px] uppercase tracking-widest text-ink3 font-mono">เป้าหมาย</p>
         <p class="text-base font-bold mt-1 leading-tight">ไฟฟ้า / คอมพิวเตอร์ / AI</p>
         <p class="text-xs text-ink3 mt-1">มจธ. · สจล. · มจพ.</p>
-      </div>
+        <p class="text-[10px] font-mono uppercase tracking-wider text-accent mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity">ดูคะแนนล่าสุด →</p>
+      </button>
     </div>
 
-    <div>
-      <div class="flex items-baseline justify-between mb-3">
-        <h2 class="font-bold text-base">กำหนดการ TCAS70</h2>
-        <button class="text-xs font-mono uppercase tracking-widest text-accent hover:underline" data-goto="calendar">ดูเกณฑ์เต็ม →</button>
+    <div class="grid md:grid-cols-2 gap-6">
+      <div>
+        <div class="flex items-baseline justify-between mb-3">
+          <h2 class="font-bold text-base">กำหนดการ TCAS70</h2>
+          <button class="text-xs font-mono uppercase tracking-widest text-accent hover:underline" data-goto="calendar">ดูเกณฑ์เต็ม →</button>
+        </div>
+        <div id="roundCards" class="grid gap-3"></div>
       </div>
-      <div id="roundCards" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
-    </div>
 
-    <div>
-      <div class="flex items-baseline justify-between mb-3">
-        <h2 class="font-bold text-base">ประกาศล่าสุด</h2>
-        <a href="https://www.mytcas.com/news/" target="_blank" rel="noopener" class="text-xs font-mono uppercase tracking-widest text-accent hover:underline">ดูข่าวล่าสุดทั้งหมด →</a>
+      <div>
+        <div class="flex items-baseline justify-between mb-3">
+          <h2 class="font-bold text-base">ประกาศล่าสุด</h2>
+          <a href="https://www.mytcas.com/news/" target="_blank" rel="noopener" class="text-xs font-mono uppercase tracking-widest text-accent hover:underline">ดูทั้งหมด →</a>
+        </div>
+        <ul id="newsList" class="divide-y divide-line border border-line rounded bg-surface"></ul>
+        <p class="text-[11px] text-ink3 mt-2">คัดเลือกและตรวจสอบไขว้จากแหล่งข่าวจริง — ดูฉบับเต็มที่ mytcas.com/news หรือแท็บ &quot;ปฏิทิน &amp; เกณฑ์&quot;</p>
       </div>
-      <ul id="newsList" class="divide-y divide-line border border-line rounded bg-surface"></ul>
-      <p class="text-xs text-ink3 mt-2">คัดเลือกและตรวจสอบไขว้จากแหล่งข่าวจริง ณ วันที่ระบุในแต่ละรายการ (ไม่ใช่ระบบดึงข่าวอัตโนมัติ อาจไม่ครบทุกประกาศ) — ดูประกาศทางการฉบับเต็มที่ mytcas.com/news หรือแท็บ &quot;ปฏิทิน &amp; เกณฑ์&quot;</p>
     </div>
   </section>
 
@@ -367,6 +388,85 @@
     </div>
   </section>
 
+  <!-- ================= TCAS SCORES ================= -->
+  <section id="tab-scores" class="hidden space-y-5">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="font-bold text-base">คะแนนสูงสุด-ต่ำสุด TCAS69 รอบ 3 (Admission)</h2>
+        <p class="text-xs text-ink3 mt-0.5">สาขาวิศวกรรม/วศ.บ./ค.อ.บ. ทั้งในและนอกคณะวิศวกรรมศาสตร์ · มหาวิทยาลัยเป้าหมาย · ข้อมูล ณ 20 พ.ค.2569</p>
+      </div>
+      <button type="button" id="scoresToggleAll" class="text-xs font-mono uppercase tracking-wider text-accent hover:underline shrink-0">ขยายทั้งหมด</button>
+    </div>
+
+    <!-- Filter chips -->
+    <div class="flex flex-wrap gap-1.5" id="scoresFilter">
+      <button class="scores-filter-chip text-xs font-mono uppercase tracking-wider rounded-full px-3 py-1 border transition-colors" data-filter="all" style="background:var(--accent);color:var(--accent-ink);border-color:var(--accent)">ทั้งหมด</button>
+      <button class="scores-filter-chip text-xs font-mono uppercase tracking-wider rounded-full px-3 py-1 border transition-colors" data-filter="accent" style="border-color:var(--accent);color:var(--accent)">3 พระจอมฯ</button>
+      <button class="scores-filter-chip text-xs font-mono uppercase tracking-wider rounded-full px-3 py-1 border transition-colors" data-filter="bad" style="border-color:var(--bad);color:var(--bad)">จุฬาฯ</button>
+      <button class="scores-filter-chip text-xs font-mono uppercase tracking-wider rounded-full px-3 py-1 border transition-colors" data-filter="good" style="border-color:var(--good);color:var(--good)">เกษตรฯ</button>
+      <button class="scores-filter-chip text-xs font-mono uppercase tracking-wider rounded-full px-3 py-1 border transition-colors" data-filter="region-bkk" style="border-color:var(--neutral);color:var(--neutral)">กรุงเทพฯ/ปริมณฑล</button>
+      <button class="scores-filter-chip text-xs font-mono uppercase tracking-wider rounded-full px-3 py-1 border transition-colors" data-filter="region-reg" style="border-color:var(--neutral);color:var(--neutral)">ภูมิภาค</button>
+    </div>
+
+    <!-- Outside-faculty toggle -->
+    <label class="flex items-center gap-2 text-xs text-ink2 cursor-pointer w-fit">
+      <input type="checkbox" id="scoresOutsideOnly" class="accent-[var(--warn)] w-4 h-4">
+      <span>แสดงเฉพาะสาขาที่ <span class="text-warn font-medium">ไม่ได้สังกัดคณะวิศวกรรมศาสตร์โดยตรง</span> (เช่น ค.อ.บ., วิทยาลัยการคอมพิวเตอร์, คณะวิทยาศาสตร์)</span>
+    </label>
+
+    <!-- Search bar -->
+    <div class="relative">
+      <input type="text" id="scoresSearch" placeholder="ค้นหาสาขาวิชา เช่น ไฟฟ้า คอมพิวเตอร์ AI..." class="w-full bg-surface border border-line rounded px-3 py-2 text-sm text-ink placeholder:text-ink3 focus:outline-none focus:border-accent transition-colors">
+      <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7"/><path d="M15 15l6 6"/></svg>
+    </div>
+
+    <!-- My-score opportunity calculator -->
+    <div class="flex flex-wrap items-center gap-3 bg-surface2 border border-line rounded px-4 py-3">
+      <label for="scoresMyScore" class="text-sm font-semibold shrink-0">คำนวณโอกาสของฉัน</label>
+      <input type="number" id="scoresMyScore" min="0" max="100" step="0.01" placeholder="กรอกคะแนนของคุณ (0–100)" class="w-52 bg-surface border border-line rounded px-3 py-1.5 text-sm text-ink placeholder:text-ink3 focus:outline-none focus:border-accent transition-colors font-mono font-tabular">
+      <span id="scoresMyScoreStatus" class="text-xs text-ink3"></span>
+    </div>
+
+    <!-- Color legend -->
+    <div class="flex flex-wrap items-center gap-4 text-[11px] text-ink3">
+      <span class="font-mono uppercase tracking-wider">คะแนนต่ำสุด (ยิ่งสูงยิ่งแข่งขันสูง):</span>
+      <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-warn"></span>≥60 แข่งขันสูง</span>
+      <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full" style="background:var(--ink)"></span>45–59.9 ปานกลาง</span>
+      <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-good"></span>&lt;45 ไม่สูงมาก</span>
+      <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-accent2"></span>มีลุ้นตามคะแนนที่กรอก</span>
+    </div>
+
+    <!-- Cross-university comparison (appears when searching) -->
+    <div id="scoresCompareWrap" class="hidden">
+      <div class="flex items-baseline justify-between mb-2">
+        <h3 class="font-bold text-sm">เทียบสาขาข้ามมหาวิทยาลัย</h3>
+        <span class="text-[11px] text-ink3 font-mono">เรียงตามคะแนนต่ำสุด มาก→น้อย</span>
+      </div>
+      <div class="overflow-x-auto border border-line rounded bg-surface">
+        <table class="w-full text-xs">
+          <thead><tr class="bg-surface2 text-ink3 font-mono uppercase tracking-wider">
+            <th class="text-left px-4 py-2 font-normal">มหาวิทยาลัย</th>
+            <th class="text-left px-2 py-2 font-normal">สาขา</th>
+            <th class="text-center px-2 py-2 font-normal">รับ</th>
+            <th class="hidden sm:table-cell text-center px-2 py-2 font-normal">สมัคร</th>
+            <th class="text-center px-2 py-2 font-normal font-tabular">คะแนนต่ำสุด</th>
+            <th class="text-center px-2 py-2 font-normal font-tabular">คะแนนสูงสุด</th>
+            <th class="hidden sm:table-cell text-center px-2 py-2 font-normal">อัตราแข่ง</th>
+          </tr></thead>
+          <tbody id="scoresCompareBody" class="divide-y divide-line"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- University comparison cards -->
+    <div id="scoresUniCards" class="space-y-4"></div>
+
+    <!-- Summary bar -->
+    <div id="scoresSummary" class="bg-surface border border-line rounded p-3 text-xs text-ink2 space-y-1">
+      <p><strong class="text-ink">หมายเหตุ:</strong> <span id="scoresSummaryNote"></span></p>
+    </div>
+  </section>
+
 </main>
 
 <footer class="max-w-6xl mx-auto px-4 sm:px-6 py-8 text-xs text-ink3 border-t border-line mt-6">
@@ -384,6 +484,7 @@
 <script src="data/alevel-eng.js"></script>
 <script src="data/tgat.js"></script>
 <script src="data/enrichment.js"></script>
+<script src="data/tcas-scores.js"></script>
 
 <script>
 (function () {
@@ -432,7 +533,7 @@
     'tpat3': { total: '70 ข้อ · 100 คะแนน · 3 ชั่วโมง (ผัง 2568)', sections: [
       { name: 'ส่วนที่ 1 · ความถนัด (60 คะแนน)', items: [
         { name: 'ด้านตัวเลข (Numerical Reasoning)', count: '15 ข้อ', status: 'partial' },
-        { name: 'ด้านมิติสัมพันธ์ (Diagrammatic Reasoning) — ยังไม่มีชุดฝึกของเราเอง (ต้องใช้สื่อภาพที่ตรวจสอบด้วยสายตา) ดูลิงก์แหล่งฝึกจริงในศูนย์ลิงก์ทางการ (แท็บ "ปฏิทิน & เกณฑ์")', count: '15 ข้อ', status: 'external' },
+        { name: 'ด้านมิติสัมพันธ์ (Diagrammatic Reasoning) — ยังไม่มีชุดฝึกของเราเอง (ต้องใช้สื่อภาพที่ตรวจสอบด้วยสายตา) ไปฝึกที่ลิงก์แหล่งฝึกจริงในศูนย์ลิงก์ทางการ (แท็บ "ปฏิทิน & เกณฑ์") แล้วติ๊กบันทึกความคืบหน้าได้ในแท็บ "บทเรียน"', count: '15 ข้อ', status: 'external' },
         { name: 'ด้านกลศาสตร์และฟิสิกส์ (Mechanical Reasoning)', count: '15 ข้อ', status: 'partial' },
       ]},
       { name: 'ส่วนที่ 2 · ความคิดและความสนใจ (40 คะแนน)', items: [
@@ -478,7 +579,7 @@
       { name: 'TGAT2 การคิดอย่างมีเหตุผล', items: [
         { name: 'ความสามารถทางภาษา (Verbal Reasoning)', count: '20 ข้อ', status: 'partial' },
         { name: 'ความสามารถทางตัวเลข (Numerical Ability)', count: '20 ข้อ', status: 'partial' },
-        { name: 'ความสามารถทางมิติสัมพันธ์ (Spatial) — ยังไม่มีชุดฝึกของเราเอง เหตุผลเดียวกับ TPAT3 ดูลิงก์แหล่งฝึกจริงในศูนย์ลิงก์ทางการ (แท็บ "ปฏิทิน & เกณฑ์")', count: '20 ข้อ', status: 'external' },
+        { name: 'ความสามารถทางมิติสัมพันธ์ (Spatial) — ยังไม่มีชุดฝึกของเราเอง เหตุผลเดียวกับ TPAT3 ไปฝึกที่ลิงก์แหล่งฝึกจริงในศูนย์ลิงก์ทางการ (แท็บ "ปฏิทิน & เกณฑ์") แล้วติ๊กบันทึกความคืบหน้าได้ในแท็บ "บทเรียน"', count: '20 ข้อ', status: 'external' },
         { name: 'ความสามารถทางเหตุผล (Logical Reasoning)', count: '20 ข้อ', status: 'partial' },
       ]},
       { name: 'TGAT3 สมรรถนะการทำงาน', items: [
@@ -640,7 +741,7 @@
       '</div>';
   }
   function renderNews() {
-    document.getElementById('newsList').innerHTML = news.map(function (n) {
+    document.getElementById('newsList').innerHTML = news.slice(0, 3).map(function (n) {
       return '<li class="flex items-start gap-3 px-4 py-3 text-sm">' +
         '<span class="flex-1">' + n.text +
         (n.source ? ' <a href="' + n.source + '" target="_blank" rel="noopener" class="text-[10px] font-mono uppercase tracking-wider text-accent hover:underline whitespace-nowrap">[แหล่งข่าว]</a>' : '') +
@@ -1023,6 +1124,7 @@
       state.attempts[quiz.id] = { score: score, total: total, ts: Date.now() };
       saveState();
       updateDashboardStats();
+      renderContinueCard();
       renderMistakeBank();
 
       let band;
@@ -1084,6 +1186,7 @@
         saveState();
         renderLessons();
         updateDashboardStats();
+        renderContinueCard();
       });
     });
     el.querySelectorAll('.lesson-detail-toggle').forEach(function (btn) {
@@ -1180,6 +1283,7 @@
         state.mistakes = imported.mistakes || {};
         saveState();
         updateDashboardStats();
+        renderContinueCard();
         renderProgress();
         renderMistakeBank();
         renderLessons();
@@ -1192,19 +1296,320 @@
   }
 
   /* ---------- Dashboard stats ---------- */
+  const RING_CIRCUMFERENCE = 2 * Math.PI * 18;
+  function setRingFill(fillId, pct) {
+    const el = document.getElementById(fillId);
+    if (!el) return;
+    const clamped = Math.max(0, Math.min(100, pct));
+    el.style.strokeDashoffset = String(RING_CIRCUMFERENCE * (1 - clamped / 100));
+  }
   function updateDashboardStats() {
     const attempts = Object.values(state.attempts);
     document.getElementById('statQuizzes').textContent = attempts.length;
     if (attempts.length) {
       const sc = attempts.reduce(function (a, b) { return a + b.score; }, 0);
       const tt = attempts.reduce(function (a, b) { return a + b.total; }, 0);
-      document.getElementById('statAccuracy').textContent = Math.round((sc / tt) * 100) + '%';
+      const accPct = Math.round((sc / tt) * 100);
+      document.getElementById('statAccuracy').textContent = accPct + '%';
+      setRingFill('ringAccuracyFill', accPct);
     } else {
       document.getElementById('statAccuracy').textContent = '—';
+      setRingFill('ringAccuracyFill', 0);
     }
     const doneCount = Object.values(state.lessonsDone).filter(Boolean).length;
-    document.getElementById('statLessons').innerHTML = doneCount + '<span class="text-base text-ink3">/' + lessons.length + '</span>';
+    document.getElementById('statLessons').innerHTML = doneCount + '<span class="text-sm text-ink3">/' + lessons.length + '</span>';
+    setRingFill('ringLessonsFill', lessons.length ? (doneCount / lessons.length) * 100 : 0);
   }
+
+  /* ---------- Continue-where-you-left-off ---------- */
+  function renderContinueCard() {
+    const el = document.getElementById('continueCard');
+
+    // Find the most recent quiz attempt by timestamp
+    let lastQuizId = null, lastTs = -1;
+    Object.keys(state.attempts).forEach(function (qid) {
+      const a = state.attempts[qid];
+      if (a.ts && a.ts > lastTs) { lastTs = a.ts; lastQuizId = qid; }
+    });
+    const lastQuiz = lastQuizId ? quizzes.find(function (q) { return q.id === lastQuizId; }) : null;
+
+    if (lastQuiz) {
+      const attempt = state.attempts[lastQuizId];
+      const pct = Math.round((attempt.score / attempt.total) * 100);
+      el.innerHTML =
+        '<p class="text-[11px] uppercase tracking-widest text-accent font-mono mb-2">ทำต่อจากจุดที่ค้างไว้</p>' +
+        '<div class="flex flex-wrap items-center justify-between gap-3">' +
+          '<div class="min-w-0">' +
+            '<p class="font-semibold text-sm">' + lastQuiz.title + '</p>' +
+            '<p class="text-xs text-ink3 mt-0.5">' + subjectName(lastQuiz.subjectId) + ' · ' + lastQuiz.topic + ' · ทำล่าสุดได้ ' + attempt.score + '/' + attempt.total + ' (' + pct + '%)</p>' +
+          '</div>' +
+          '<button type="button" id="continueBtn" class="shrink-0 text-xs font-mono uppercase tracking-wider text-accentink bg-accent rounded px-4 py-2 hover:opacity-90 transition-opacity">ทำอีกครั้ง →</button>' +
+        '</div>';
+      document.getElementById('continueBtn').addEventListener('click', function () {
+        showTab('bank');
+        activeSubject = lastQuiz.subjectId;
+        renderFilters();
+        renderQuizList();
+        requestAnimationFrame(function () { openQuiz(lastQuizId); });
+      });
+      return;
+    }
+
+    // No quiz attempts yet — check for lesson progress, else first-time prompt
+    const doneLessonIds = Object.keys(state.lessonsDone).filter(function (id) { return state.lessonsDone[id]; });
+    if (doneLessonIds.length) {
+      el.innerHTML =
+        '<p class="text-[11px] uppercase tracking-widest text-accent font-mono mb-2">เริ่มทำโจทย์กันเลย</p>' +
+        '<div class="flex flex-wrap items-center justify-between gap-3">' +
+          '<p class="text-sm text-ink2">อ่านบทเรียนไปแล้ว ' + doneLessonIds.length + ' หัวข้อ — ลองทำชุดฝึกหัดข้อสอบดูสักชุดไหม?</p>' +
+          '<button type="button" data-goto="bank" class="shrink-0 text-xs font-mono uppercase tracking-wider text-accentink bg-accent rounded px-4 py-2 hover:opacity-90 transition-opacity">ไปคลังข้อสอบ →</button>' +
+        '</div>';
+    } else {
+      el.innerHTML =
+        '<p class="text-[11px] uppercase tracking-widest text-accent font-mono mb-2">ยินดีต้อนรับสู่เข็มทิศ</p>' +
+        '<div class="flex flex-wrap items-center justify-between gap-3">' +
+          '<p class="text-sm text-ink2">ยังไม่เคยทำโจทย์หรืออ่านบทเรียนเลย — เริ่มจาก TPAT3 หรือดูบทเรียนก่อนก็ได้</p>' +
+          '<button type="button" data-goto="bank" class="shrink-0 text-xs font-mono uppercase tracking-wider text-accentink bg-accent rounded px-4 py-2 hover:opacity-90 transition-opacity">เริ่มทำโจทย์แรก →</button>' +
+        '</div>';
+    }
+    const gotoBtn = el.querySelector('[data-goto]');
+    if (gotoBtn) gotoBtn.addEventListener('click', function () { showTab(gotoBtn.dataset.goto); });
+  }
+
+  /* ---------- TCAS Scores dashboard ---------- */
+  var tcasData = window.KEMTID_DATA && window.KEMTID_DATA.tcasScores;
+  var tcasSearchTerm = '';
+  var tcasFilterColor = 'all';
+
+  function renderTcasScores() {
+    if (!tcasData || !tcasData.universities || !tcasData.universities.length) {
+      document.getElementById('scoresUniCards').innerHTML = '<div class="bg-surface border border-line rounded p-6 text-center"><p class="text-ink3 text-sm">ยังไม่มีข้อมูลคะแนน อัปเดตเร็วๆ นี้</p></div>';
+      return;
+    }
+
+    var all = tcasData.universities;
+    var term = tcasSearchTerm.toLowerCase().trim();
+    var colorFilter = tcasFilterColor;
+    var myScoreRaw = document.getElementById('scoresMyScore') ? document.getElementById('scoresMyScore').value : '';
+    var myScore = myScoreRaw !== '' && !isNaN(parseFloat(myScoreRaw)) ? parseFloat(myScoreRaw) : null;
+    var outsideOnly = !!(document.getElementById('scoresOutsideOnly') && document.getElementById('scoresOutsideOnly').checked);
+
+    // Filter by uni color/region/search, then filter programs within by outsideOnly + search term
+    var filtered = all.filter(function (u) {
+      if (colorFilter === 'all') return true;
+      if (colorFilter.indexOf('region-') === 0) return u.region === colorFilter.slice('region-'.length);
+      return u.color === colorFilter;
+    }).map(function (u) {
+      var progs = u.programs.filter(function (p) {
+        if (outsideOnly && !p.faculty) return false;
+        if (term && p.name.toLowerCase().indexOf(term) === -1 && u.short.indexOf(term) === -1 && u.campus.indexOf(term) === -1) return false;
+        return true;
+      }).slice().sort(function (a, b) { return (b.minScore || 0) - (a.minScore || 0); });
+      return Object.assign({}, u, { programs: progs });
+    }).filter(function (u) { return u.programs.length > 0; })
+      .sort(function (a, b) {
+        var aPriority = a.color === 'accent' ? 0 : 1;
+        var bPriority = b.color === 'accent' ? 0 : 1;
+        if (aPriority !== bPriority) return aPriority - bPriority;
+        return (b.programs[0].minScore || 0) - (a.programs[0].minScore || 0);
+      });
+
+    // Cross-university comparison table (only when actively searching a program name)
+    var compareWrap = document.getElementById('scoresCompareWrap');
+    if (term) {
+      var compareRows = [];
+      filtered.forEach(function (u) {
+        u.programs.forEach(function (p) {
+          compareRows.push({ uni: u, p: p });
+        });
+      });
+      compareRows.sort(function (a, b) { return (b.p.minScore || 0) - (a.p.minScore || 0); });
+      if (compareRows.length > 1) {
+        compareWrap.classList.remove('hidden');
+        document.getElementById('scoresCompareBody').innerHTML = compareRows.map(function (row) {
+          var u = row.uni, p = row.p;
+          var ratio = p.applicants && p.quota ? (p.applicants / p.quota).toFixed(1) : '-';
+          var minOk = p.minScore > 0, maxOk = p.maxScore > 0;
+          var scoreClass = minOk ? (p.minScore >= 60 ? 'text-warn' : p.minScore >= 45 ? 'text-ink' : 'text-good') : 'text-ink3';
+          var isEligible = myScore !== null && p.minScore > 0 && myScore >= p.minScore;
+          var rowStyle = isEligible ? ' style="background:rgb(var(--accent2-rgb) / 0.10)"' : '';
+          var eligibleBadge = isEligible ? '<span class="inline-block text-[10px] font-mono uppercase text-accent2 border border-accent2/40 rounded px-1.5 py-0.5 ml-1.5 align-middle">มีลุ้น</span>' : '';
+          return '<tr' + rowStyle + '>' +
+            '<td class="px-4 py-2.5 whitespace-nowrap"><span class="inline-block w-2 h-2 rounded-full mr-1.5" style="background:var(--' + u.color + ')"></span>' + u.short + (u.campus ? ' <span class="text-ink3">' + u.campus + '</span>' : '') + '</td>' +
+            '<td class="px-2 py-2.5 text-ink font-medium">' + p.name + eligibleBadge + '</td>' +
+            '<td class="px-2 py-2.5 text-center font-mono font-tabular text-ink2">' + (p.quota || '-') + '</td>' +
+            '<td class="hidden sm:table-cell px-2 py-2.5 text-center font-mono font-tabular text-ink2">' + (p.applicants || '-') + '</td>' +
+            '<td class="px-2 py-2.5 text-center font-mono font-tabular ' + scoreClass + '">' + (minOk ? p.minScore.toFixed(1) : '-') + '</td>' +
+            '<td class="px-2 py-2.5 text-center font-mono font-tabular text-ink">' + (maxOk ? p.maxScore.toFixed(1) : '-') + '</td>' +
+            '<td class="hidden sm:table-cell px-2 py-2.5 text-center font-mono font-tabular text-ink3">' + ratio + ':1</td>' +
+          '</tr>';
+        }).join('');
+      } else {
+        compareWrap.classList.add('hidden');
+      }
+    } else {
+      compareWrap.classList.add('hidden');
+    }
+
+    // Summary
+    var totalQuota = 0, totalApplicants = 0, totalPassed = 0, totalOutside = 0, totalEligible = 0;
+    filtered.forEach(function (u) { u.programs.forEach(function (p) {
+      totalQuota += p.quota || 0; totalApplicants += p.applicants || 0; totalPassed += (p.quota || 0);
+      if (p.faculty) totalOutside++;
+      if (myScore !== null && p.minScore > 0 && myScore >= p.minScore) totalEligible++;
+    }); });
+    document.getElementById('scoresSummaryNote').textContent =
+      'แสดง ' + filtered.length + ' มหาวิทยาลัย/วิทยาเขต · ' +
+      filtered.reduce(function (s, u) { return s + u.programs.length; }, 0) + ' สาขา' +
+      (totalOutside ? ' (รวม ' + totalOutside + ' สาขานอกคณะวิศวกรรมศาสตร์ เช่น ค.อ.บ., วิทยาลัยการคอมพิวเตอร์, คณะวิทยาศาสตร์)' : '') +
+      ' (รวมรับ ' + totalQuota + ' คน · สมัคร ' + totalApplicants + ' คน · อัตราแข่งขัน ' + (totalApplicants && totalQuota ? (totalApplicants/totalQuota).toFixed(1) : '-') + ':1)' +
+      ' · ข้อมูล ณ 20 พ.ค.2569 (ประมวลผลครั้งที่ 1) — ควรตรวจสอบกับ mytcas.com อีกครั้ง';
+
+    var myScoreStatusEl = document.getElementById('scoresMyScoreStatus');
+    if (myScoreStatusEl) {
+      myScoreStatusEl.textContent = myScore !== null
+        ? 'มีลุ้นอย่างน้อย ' + totalEligible + ' สาขา (คะแนนต่ำสุดของปีก่อนไม่เกิน ' + myScore + ') — ดูแถวที่ไฮไลต์สีฟ้าในตาราง'
+        : '';
+    }
+
+    // Empty state
+    if (!filtered.length) {
+      document.getElementById('scoresUniCards').innerHTML =
+        '<div class="bg-surface border border-line rounded p-8 text-center">' +
+          '<p class="text-sm text-ink2 font-medium">ไม่พบสาขาที่ตรงกับตัวกรอง/คำค้นหานี้</p>' +
+          '<p class="text-xs text-ink3 mt-1">ลองล้างคำค้นหาหรือเปลี่ยนตัวกรองมหาวิทยาลัยดู</p>' +
+        '</div>';
+      document.getElementById('scoresToggleAll').classList.add('hidden');
+      return;
+    }
+    document.getElementById('scoresToggleAll').classList.remove('hidden');
+
+    // Render cards
+    var html = filtered.map(function (u) {
+      var uniqId = (u.id || u.short).replace(/[^a-z0-9]/g, '');
+      var dotColor = 'var(--' + u.color + ')';
+      var isParent = !u.parent;
+      var campusLabel = u.campus ? ' <span class="text-ink3 font-normal">' + u.campus + '</span>' : '';
+
+      return '<div class="bg-surface border border-line rounded overflow-hidden" data-uni-color="' + u.color + '">' +
+        /* Header bar */
+        '<div class="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-surface2/50 transition-colors uni-card-header" data-uni-id="' + uniqId + '">' +
+          '<div class="flex items-center gap-2 min-w-0">' +
+            '<span class="w-3 h-3 rounded-full shrink-0" style="background:' + dotColor + '"></span>' +
+            '<div class="min-w-0">' +
+              '<p class="font-semibold text-sm truncate">' + (isParent ? u.name : '<span class="text-ink3">↳</span> ' + u.name) + '</p>' +
+              '<p class="text-[10px] font-mono uppercase tracking-widest text-ink3">' + u.short + campusLabel + '</p>' +
+            '</div>' +
+          '</div>' +
+          '<div class="flex items-center gap-4 shrink-0">' +
+            '<span class="hidden sm:inline text-[11px] font-mono text-ink3">' + u.programs.length + ' สาขา</span>' +
+            '<svg id="chevron-' + uniqId + '" class="w-4 h-4 text-ink3 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>' +
+          '</div>' +
+        '</div>' +
+        /* Program table (hidden by default, expandable) */
+        '<div id="uni-body-' + uniqId + '" class="hidden border-t border-line">' +
+          '<div class="overflow-x-auto">' +
+            '<table class="w-full text-xs">' +
+              '<thead><tr class="bg-surface2 text-ink3 font-mono uppercase tracking-wider">' +
+                '<th class="text-left px-4 py-2 font-normal">สาขา</th>' +
+                '<th class="hidden md:table-cell text-left px-2 py-2 font-normal">คณะ/สังกัด</th>' +
+                '<th class="text-center px-2 py-2 font-normal">รับ</th>' +
+                '<th class="hidden sm:table-cell text-center px-2 py-2 font-normal">สมัคร</th>' +
+                '<th class="text-center px-2 py-2 font-normal font-tabular">คะแนนต่ำสุด</th>' +
+                '<th class="text-center px-2 py-2 font-normal font-tabular">คะแนนสูงสุด</th>' +
+                '<th class="hidden sm:table-cell text-center px-2 py-2 font-normal">อัตราแข่ง</th>' +
+              '</tr></thead>' +
+              '<tbody class="divide-y divide-line">' +
+                u.programs.map(function (p) {
+                  var ratio = p.applicants && p.quota ? (p.applicants / p.quota).toFixed(1) : '-';
+                  var isEligible = myScore !== null && p.minScore > 0 && myScore >= p.minScore;
+                  var isHighlight = isEligible ? ' style="background:rgb(var(--accent2-rgb) / 0.10)"'
+                    : p.highlight ? ' style="background:var(--' + u.color + '/0.06)"' : '';
+                  var noteHtml = p.note ? '<span class="text-ink3 ml-1">(' + p.note + ')</span>' : '';
+                  var minOk = p.minScore > 0;
+                  var maxOk = p.maxScore > 0;
+                  var facultyLabel = p.faculty ? p.faculty : 'คณะวิศวกรรมศาสตร์';
+                  var facultyIsOutside = !!p.faculty;
+                  var facultyHtml = '<span class="' + (facultyIsOutside ? 'text-warn' : 'text-ink3') + '">' + facultyLabel + '</span>';
+                  var eligibleBadge = isEligible ? '<span class="inline-block text-[10px] font-mono uppercase text-accent2 border border-accent2/40 rounded px-1.5 py-0.5 ml-1.5 align-middle">มีลุ้น</span>' : '';
+                  return '<tr' + isHighlight + '>' +
+                    '<td class="px-4 py-2.5 text-ink font-medium">' + p.name + eligibleBadge + noteHtml + '</td>' +
+                    '<td class="hidden md:table-cell px-2 py-2.5 text-xs whitespace-nowrap">' + facultyHtml + '</td>' +
+                    '<td class="px-2 py-2.5 text-center font-mono font-tabular text-ink2">' + (p.quota || '-') + '</td>' +
+                    '<td class="hidden sm:table-cell px-2 py-2.5 text-center font-mono font-tabular text-ink2">' + (p.applicants || '-') + '</td>' +
+                    '<td class="px-2 py-2.5 text-center font-mono font-tabular ' + (minOk ? (p.minScore >= 60 ? 'text-warn' : p.minScore >= 45 ? 'text-ink' : 'text-good') : 'text-ink3') + '" title="' + (minOk ? (p.minScore >= 60 ? 'แข่งขันสูง' : p.minScore >= 45 ? 'แข่งขันปานกลาง' : 'แข่งขันไม่สูงมาก') : '') + '">' + (minOk ? p.minScore.toFixed(1) : '-') + '</td>' +
+                    '<td class="px-2 py-2.5 text-center font-mono font-tabular text-ink">' + (maxOk ? p.maxScore.toFixed(1) : '-') + '</td>' +
+                    '<td class="hidden sm:table-cell px-2 py-2.5 text-center font-mono font-tabular text-ink3">' + ratio + ':1</td>' +
+                  '</tr>';
+                }).join('') +
+              '</tbody>' +
+            '</table>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    document.getElementById('scoresUniCards').innerHTML = html;
+
+    // Attach toggle events
+    document.querySelectorAll('.uni-card-header').forEach(function (hdr) {
+      hdr.addEventListener('click', function () {
+        var id = hdr.dataset.uniId;
+        var body = document.getElementById('uni-body-' + id);
+        var chevron = document.getElementById('chevron-' + id);
+        var isOpen = !body.classList.contains('hidden');
+        body.classList.toggle('hidden');
+        if (chevron) chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+      });
+    });
+  }
+
+  // Filter chips
+  document.getElementById('scoresFilter').addEventListener('click', function (e) {
+    var chip = e.target.closest('.scores-filter-chip');
+    if (!chip) return;
+    var filter = chip.dataset.filter;
+    tcasFilterColor = filter;
+    // Visual update
+    document.querySelectorAll('.scores-filter-chip').forEach(function (c) {
+      var f = c.dataset.filter;
+      var swatchVar = f === 'all' ? '--accent' : (f.indexOf('region-') === 0 ? '--neutral' : '--' + f);
+      var col = 'var(' + swatchVar + ')';
+      c.style.background = f === filter ? col : 'transparent';
+      c.style.color = f === filter ? 'var(--accent-ink)' : col;
+      c.style.borderColor = col;
+    });
+    renderTcasScores();
+  });
+
+  // Search
+  document.getElementById('scoresSearch').addEventListener('input', function () {
+    tcasSearchTerm = this.value;
+    renderTcasScores();
+  });
+
+  // Outside-faculty-only toggle
+  document.getElementById('scoresOutsideOnly').addEventListener('change', function () {
+    renderTcasScores();
+  });
+
+  // My-score opportunity calculator
+  document.getElementById('scoresMyScore').addEventListener('input', function () {
+    renderTcasScores();
+  });
+
+  // Expand all / collapse all
+  var scoresAllExpanded = false;
+  document.getElementById('scoresToggleAll').addEventListener('click', function () {
+    scoresAllExpanded = !scoresAllExpanded;
+    this.textContent = scoresAllExpanded ? 'ย่อทั้งหมด' : 'ขยายทั้งหมด';
+    document.querySelectorAll('[id^="uni-body-"]').forEach(function (body) {
+      body.classList.toggle('hidden', !scoresAllExpanded);
+    });
+    document.querySelectorAll('[id^="chevron-"]').forEach(function (ch) {
+      ch.style.transform = scoresAllExpanded ? 'rotate(180deg)' : '';
+    });
+  });
 
   /* ---------- Init ---------- */
   renderRoundCards();
@@ -1219,7 +1624,9 @@
   renderFilters();
   renderQuizList();
   renderLessons();
+  renderTcasScores();
   updateDashboardStats();
+  renderContinueCard();
 
   document.getElementById('toggleTopicMap').addEventListener('click', function () {
     const panel = document.getElementById('topicMapPanel');
@@ -1240,7 +1647,7 @@
   });
 
   const initial = (location.hash || '').replace('#', '');
-  const valid = ['dashboard', 'calendar', 'bank', 'lessons', 'progress'];
+  const valid = ['dashboard', 'calendar', 'bank', 'lessons', 'scores', 'progress'];
   showTab(valid.indexOf(initial) !== -1 ? initial : 'dashboard');
 })();
 </script>
