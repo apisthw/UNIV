@@ -112,6 +112,24 @@
   .tab-btn[aria-selected="true"] .tab-dot { background: var(--accent); }
   ::-webkit-scrollbar { height: 8px; width: 8px; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* Hero */
+  .hero-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 28px; align-items: center; }
+  @media (max-width: 780px) { .hero-grid { grid-template-columns: 1fr; } }
+  .hero-photo-frame { position: relative; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); aspect-ratio: 5 / 4; background: var(--surface-2); }
+  .hero-photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .hero-photo-scrim { position: absolute; inset: 0; background: linear-gradient(0deg, rgb(0 0 0 / 0.32), transparent 45%); }
+  .hero-photo-caption { position: absolute; left: 10px; bottom: 8px; font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: rgb(255 255 255 / 0.85); text-shadow: 0 1px 2px rgb(0 0 0 / 0.4); }
+  .hero-timeline-track { position: relative; display: flex; justify-content: space-between; padding: 0 6px; }
+  .hero-timeline-line { position: absolute; top: 9px; left: 20px; right: 20px; height: 2px; background: repeating-linear-gradient(90deg, var(--border) 0 6px, transparent 6px 11px); }
+  .hero-timeline-line-fill { position: absolute; top: 9px; left: 20px; height: 2px; background: var(--accent); }
+  .hero-tl-node { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; text-align: center; }
+  .hero-tl-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); background: var(--surface); display: grid; place-items: center; z-index: 1; }
+  .hero-tl-dot.done { border-color: var(--accent); background: var(--accent); }
+  .hero-tl-dot.now { border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 4px rgb(var(--accent-rgb) / 0.16); }
+  .hero-tl-dot.goal { border-color: var(--accent2); background: var(--surface); }
+  .hero-tl-label.now { color: var(--accent); font-weight: 700; }
+  .hero-tl-label.goal { color: var(--accent2); font-weight: 700; }
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; animation: none !important; }
   }
@@ -178,6 +196,32 @@
 
   <!-- ================= DASHBOARD ================= -->
   <section id="tab-dashboard" class="space-y-6">
+    <!-- Hero -->
+    <div class="tick relative bg-surface border border-line rounded p-5 sm:p-7">
+      <div class="hero-grid">
+        <div>
+          <div class="text-[11px] font-mono uppercase tracking-widest text-accent mb-3">◆ เส้นทางสู่รั้ววิศวะ</div>
+          <h1 class="text-2xl sm:text-3xl font-bold leading-tight mb-3" style="text-wrap:balance">ระยะทางจากวันนี้ ถึงวันที่ใส่ชุดนิสิตวิศวะ</h1>
+          <p class="text-sm text-ink2 leading-relaxed mb-5 max-w-[50ch]">แต่ละหมุดคือด่านที่ต้องผ่าน ไม่ใช่แค่วันสอบ — เข็มทิศพาเดินตามเส้นทางนี้ทีละก้าว พร้อมบอกว่าตอนนี้ควรโฟกัสอะไรก่อน</p>
+          <div class="flex flex-wrap gap-3">
+            <button type="button" data-goto="bank" class="text-xs font-mono uppercase tracking-wider bg-accent text-accentink rounded px-4 py-2.5 hover:opacity-90 transition-opacity">→ เริ่มฝึกวันนี้</button>
+            <button type="button" data-goto="calendar" class="text-xs font-mono uppercase tracking-wider border border-line rounded px-4 py-2.5 text-ink2 hover:border-accent hover:text-accent transition-colors">ดูปฏิทิน TCAS70 เต็ม</button>
+          </div>
+        </div>
+        <div class="hero-photo-frame tick">
+          <img src="assets/hero-engineer.jpg" alt="วิศวกรกำลังออกแบบหุ่นยนต์การเกษตร บนโต๊ะทำงานเต็มไปด้วยอุปกรณ์และแบบร่าง" loading="lazy">
+          <div class="hero-photo-scrim"></div>
+          <div class="hero-photo-caption font-mono">PHOTO: THISISENGINEERING / UNSPLASH</div>
+        </div>
+      </div>
+
+      <div class="mt-7 pt-1">
+        <div class="hero-timeline-track" id="heroTimeline"></div>
+      </div>
+
+      <div id="heroCountdown" class="mt-7 grid sm:grid-cols-[auto_1fr_auto] items-center gap-4 bg-surface2 border border-line rounded p-4"></div>
+    </div>
+
     <!-- Continue-where-you-left-off -->
     <div id="continueCard" class="tick relative bg-surface border border-accent/40 rounded p-4"></div>
 
@@ -622,9 +666,9 @@
     { id: 'r4', name: 'TCAS70 · รอบที่ 4 Direct Admission', start: '2027-05-29', end: '2027-06-18' },
   ];
   const examDates = [
-    { name: 'TGAT/TPAT2-5', date: '30 ม.ค. – 1 ก.พ. 2570', note: '30 ม.ค. TPAT3 (09.00-12.00) + TGAT (13.00-16.00) · 31 ม.ค. TPAT5 (09.00-12.00) + TPAT2 (13.00-16.00) · 1 ก.พ. TPAT4 (09.00-12.00)' },
-    { name: 'TPAT1 (วิชาเฉพาะ กสพท)', date: '13 ก.พ. 2570' },
-    { name: 'A-Level', date: '13–15 มี.ค. 2570' },
+    { name: 'TGAT/TPAT2-5', date: '30 ม.ค. – 1 ก.พ. 2570', iso: '2027-01-30', note: '30 ม.ค. TPAT3 (09.00-12.00) + TGAT (13.00-16.00) · 31 ม.ค. TPAT5 (09.00-12.00) + TPAT2 (13.00-16.00) · 1 ก.พ. TPAT4 (09.00-12.00)' },
+    { name: 'TPAT1 (วิชาเฉพาะ กสพท)', date: '13 ก.พ. 2570', iso: '2027-02-13' },
+    { name: 'A-Level', date: '13–15 มี.ค. 2570', iso: '2027-03-13' },
   ];
 
   const compareData = [
@@ -716,6 +760,62 @@
         (e.note ? '<p class="text-[11px] text-ink3 mt-1">' + e.note + '</p>' : '') +
         '</div>';
     }).join('');
+  }
+  function renderHero() {
+    const round3 = rounds.find(function (r) { return r.id === 'r3'; });
+    const round4 = rounds.find(function (r) { return r.id === 'r4'; });
+    const tgatTpat = examDates.find(function (e) { return e.name === 'TGAT/TPAT2-5'; });
+    const aLevel = examDates.find(function (e) { return e.name === 'A-Level'; });
+
+    const today = new Date();
+    const points = [
+      { key: 'today', label: 'วันนี้', date: today, mono: today.toLocaleDateString('th-TH', { month: 'short', year: '2-digit' }) },
+      { key: 'tgat', label: 'TGAT/TPAT', date: new Date(tgatTpat.iso + 'T00:00:00'), mono: fmtMonthYear(tgatTpat.iso) },
+      { key: 'alevel', label: 'A-Level', date: new Date(aLevel.iso + 'T00:00:00'), mono: fmtMonthYear(aLevel.iso) },
+      { key: 'round3', label: 'ยื่นรอบ 3', date: new Date(round3.start + 'T00:00:00'), mono: fmtMonthYear(round3.start) },
+      { key: 'goal', label: 'รั้ววิศวะ', date: new Date(round4.end + 'T00:00:00'), mono: fmtMonthYear(round4.end) },
+    ];
+
+    const totalSpan = points[points.length - 1].date - points[0].date;
+    let nowIdx = 0;
+    for (let i = 1; i < points.length; i++) {
+      if (today >= points[i].date) nowIdx = i;
+    }
+    const fillPct = totalSpan > 0 ? Math.min(100, Math.max(0, ((today - points[0].date) / totalSpan) * 100)) : 0;
+
+    const dotIcons = {
+      done: '<svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-ink)" stroke-width="3"><path d="M5 12l5 5L19 7"/></svg>',
+      goal: '<svg viewBox="0 0 24 24" fill="none" stroke="var(--accent2)" stroke-width="2.5"><path d="M12 2l2.4 6.8L21 11l-6.6 2.2L12 20l-2.4-6.8L3 11l6.6-2.2z"/></svg>',
+    };
+    const nodesHtml = points.map(function (p, i) {
+      let dotClass = '', icon = '';
+      if (i === points.length - 1) { dotClass = 'goal'; icon = dotIcons.goal; }
+      else if (i < nowIdx || (i === 0 && nowIdx > 0)) { dotClass = 'done'; icon = dotIcons.done; }
+      else if (i === nowIdx) { dotClass = 'now'; }
+      return '<div class="hero-tl-node">' +
+        '<div class="hero-tl-dot ' + dotClass + '">' + icon + '</div>' +
+        '<div class="hero-tl-label text-[10px] font-mono uppercase tracking-wide text-ink3' + (i === nowIdx ? ' now' : (i === points.length - 1 ? ' goal' : '')) + '">' + p.label + '</div>' +
+        '<div class="text-[11px] text-ink3 font-mono -mt-1">' + p.mono + '</div>' +
+        '</div>';
+    }).join('');
+    document.getElementById('heroTimeline').innerHTML =
+      '<div class="hero-timeline-line"></div>' +
+      '<div class="hero-timeline-line-fill" style="width:' + fillPct + '%"></div>' +
+      nodesHtml;
+
+    const daysToALevel = Math.ceil((new Date(aLevel.iso + 'T00:00:00') - today) / 86400000);
+    document.getElementById('heroCountdown').innerHTML =
+      '<div class="text-4xl font-bold font-mono font-tabular text-accent leading-none">' + (daysToALevel > 0 ? daysToALevel : 0) +
+        ' <span class="text-sm text-ink3 font-normal">วัน</span></div>' +
+      '<div>' +
+        '<p class="text-sm text-ink2">เหลืออีก <b class="text-ink">' + (daysToALevel > 0 ? daysToALevel : 0) + ' วัน</b> ก่อนถึงสนามสอบ A-Level — ตอนนี้คือช่วงเวลาที่มีค่าที่สุด</p>' +
+        '<p class="text-xs text-ink3 mt-0.5">คำนวณจากวันสอบ A-Level ที่ประกาศจริงในแท็บปฏิทิน</p>' +
+      '</div>' +
+      '<button type="button" data-goto="calendar" class="text-xs font-mono uppercase tracking-wider border border-line rounded px-4 py-2 text-ink2 hover:border-accent hover:text-accent transition-colors whitespace-nowrap">ตั้งเป้าวันนี้</button>';
+    document.getElementById('heroCountdown').querySelector('[data-goto]').addEventListener('click', function () { showTab(this.dataset.goto); });
+  }
+  function fmtMonthYear(iso) {
+    return new Date(iso + 'T00:00:00').toLocaleDateString('th-TH', { month: 'short', year: '2-digit' });
   }
   function cardHtml(r) {
     const st = roundStatus(r);
@@ -1612,6 +1712,7 @@
   });
 
   /* ---------- Init ---------- */
+  renderHero();
   renderRoundCards();
   renderNews();
   renderTimeline();
